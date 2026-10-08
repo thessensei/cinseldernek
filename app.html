@@ -217,6 +217,116 @@
             .conv-item { min-width: 170px; }
             .chat-msgs { height: 55vh; }
         }
+
+        /* Forum esintili, daha sakin SPEKTRUM görünümü — mevcut sohbet ve destek akışları korunur. */
+        :root { --sp-ink: #2d2934; --sp-muted: #817a88; --sp-line: #e8e3eb; --sp-bg: #f6f4f8; --sp-card: #fff; --sp-violet: #7951b7; --sp-violet-dark: #56358e; }
+        body { background: var(--sp-bg); color: var(--sp-ink); }
+        .bg-glow { display: none; }
+        .topbar { max-width: none; padding: 0.75rem max(1rem, calc((100vw - 1320px) / 2)); background: rgba(255,255,255,.96); border-bottom: 1px solid var(--sp-line); box-shadow: 0 4px 20px rgba(42,31,53,.035); }
+        .logo { color: var(--sp-violet-dark); background: none; -webkit-text-fill-color: var(--sp-violet-dark); animation: none; letter-spacing: 1.5px; }
+        .user-chip { color: #5c5363; background: #f7f5f8; border-color: var(--sp-line); }
+        .chip-btn { color: #5d5464; border-color: #e5dfea; background: #fff; }
+        .chip-btn:hover { color: var(--sp-violet-dark); background: #f8f5fb; border-color: #d0c2df; }
+        .layout { max-width: 1320px; min-height: calc(100vh - 70px); }
+        .sidebar { background: #faf9fb; border-right-color: var(--sp-line); }
+        .side-btn { color: #756d7c; }
+        .side-btn:hover { color: #44364f; background: #f1edf5; }
+        .side-btn.active { color: #553c76; background: #eee7f6; border-left-color: var(--sp-violet); }
+        main { padding: 1.45rem 1.6rem; }
+        .welcome { position: relative; overflow: hidden; background: linear-gradient(120deg,#eee7f6,#faf6fb); border-color: #e4d9ed; }
+        .welcome h2 { color: #392e45; }
+        .welcome p { color: #756b7e; }
+        .welcome-kicker, .home-kicker { display: block; margin-bottom: .35rem; color: #9079a7; font-size: .65rem; font-weight: 900; letter-spacing: 1.1px; }
+        .welcome .btn { margin-top: .75rem; }
+        .chip-btn.share-btn { color: #fff; background: var(--sp-violet); border-color: var(--sp-violet); font-weight: 750; }
+        .chip-btn.share-btn:hover { color: #fff; background: var(--sp-violet-dark); }
+        .community-index, .home-forum-feed { padding: 1.1rem; }
+        .home-section-head { display: flex; align-items: center; justify-content: space-between; gap: .8rem; margin-bottom: .75rem; }
+        .home-section-head h3 { margin: 0; color: #3d3445; font-size: .96rem; }
+        .home-section-head .home-kicker { margin-bottom: .2rem; }
+        .home-pill { flex: 0 0 auto; padding: .3rem .55rem; border-radius: 50px; color: #6b5486; background: #f1ebf7; font-size: .65rem; font-weight: 750; }
+        .home-categories { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: .55rem; }
+        .home-cat { min-width: 0; display: grid; grid-template-columns: 34px minmax(0,1fr) 14px; align-items: center; gap: .6rem; padding: .6rem .65rem; border: 1px solid #ebe6ef; border-radius: 11px; background: #fff; text-align: left; cursor: pointer; transition: .2s; }
+        .home-cat:hover { border-color: #d3c4e1; background: #fcfaff; transform: translateY(-1px); }
+        .home-cat-icon { width: 32px; height: 32px; display: grid; place-items: center; border-radius: 10px; background: #f3eef8; font-size: .95rem; }
+        .home-cat strong { display: block; overflow: hidden; color: #504558; font-size: .74rem; text-overflow: ellipsis; white-space: nowrap; }
+        .home-cat small { display: block; margin-top: .15rem; overflow: hidden; color: #928b98; font-size: .62rem; text-overflow: ellipsis; white-space: nowrap; }
+        .home-cat > b { color: #a296af; font-size: 1.1rem; }
+        .text-action { padding: .35rem .5rem; border: 0; border-radius: 8px; color: #70528e; background: transparent; font-size: .72rem; font-weight: 800; cursor: pointer; }
+        .text-action:hover { background: #f5f0fa; }
+        #home-feed-list .card { margin-bottom: .7rem; padding: 1rem; }
+        #home-feed-list .card:last-child { margin-bottom: 0; }
+        .card, .chat-wrap, .conv-item, .res-card { color: var(--sp-ink); background: var(--sp-card); border-color: var(--sp-line); box-shadow: 0 5px 18px rgba(43,31,54,.035); }
+        .card h3 { color: #3d3445; }
+        input, select, textarea { color: #39323f; background: #fff; border-color: #e2dce7; }
+        input::placeholder, textarea::placeholder { color: #a29aa7; }
+        input:focus, select:focus, textarea:focus { border-color: #a68bc4; box-shadow: 0 0 0 3px rgba(121,81,183,.1); }
+        select option { color: #362e3c; background: #fff; }
+        label.f { color: #786f80; }
+        .btn { color: #fff; background: linear-gradient(135deg,#7951b7,#a867be); }
+        .btn:hover { box-shadow: 0 6px 20px rgba(121,81,183,.2); }
+        .btn.ghost { color: #69557e; background: #faf8fc; border-color: #e5ddec; }
+        .chips { gap: .5rem; }
+        .chip { color: #746c7b; background: #fff; border-color: #e5dfe9; }
+        .chip:hover { color: #513875; background: #faf7fd; }
+        .chip.active { color: #fff; background: var(--sp-violet); border-color: var(--sp-violet); }
+        .post-meta .post-time { color: #938b98; }
+        .cat-chip { color: #6e5887; background: #f4eff9; border-color: #e6dcef; }
+        .post-content { color: #49414f; }
+        .act-btn { color: #766d7d; border-color: #e6e0e9; }
+        .act-btn:hover { color: #62428b; border-color: #cbbadd; background: #faf7fd; }
+        .act-btn.on { color: #69469a; border-color: #bba6d2; background: #f1eaf8; }
+        .comment { color: #4d4653; }
+        .comment .who { color: #704d9a; }
+        .comments { border-top-color: #ece7ef; }
+        .empty { color: #89818e; border-color: #e3dce8; background: rgba(255,255,255,.65); }
+        .st-beklemede { color: #8c6c19; background: #fbf5e3; }
+        .st-degerlendiriliyor { color: #437aa0; background: #eaf4f9; }
+        .st-yanitlandi { color: #3f8063; background: #eaf5ef; }
+        .st-kapandi { color: #827b86; background: #f0edf1; }
+        .res-card h4 { color: #3f3747; }
+        .res-card p { color: #7d7582; }
+        .res-card a { color: #735096; }
+        .phone-badge { color: #3f8063; background: #edf7f0; border-color: #cfe8d6; }
+        .notice { color: #514958; border-bottom-color: #eee9f0; }
+        .lock-box { color: #726979; border-color: #e7dce9; background: #fcf9fd; }
+        .ok-banner { color: #3d765d; background: #eff8f2; border-color: #d0ead8; }
+        .switch-note { color: #8b838f; }
+        .friend-card { border-color: #eadceb; background: #fcf8fc; }
+        .friend-card a { color: #7951a0; }
+        .toast { color: #fff; background: #342a3c; border-color: #51435c; }
+        .toast.err { color: #ffccd3; border-color: #b96d7a; }
+        .quick-exit-fab { color: #fff; background: linear-gradient(135deg,#d85870,#b84163); box-shadow: 0 8px 24px rgba(184,65,99,.24); }
+        .pride-bar { height: 3px; }
+        .conv-item:hover, .conv-item.active { background: #f6f0fb; border-color: #d7c6e8; }
+        .conv-item .cname { color: #403746; }
+        .conv-item .clast { color: #8a828f; }
+        .conv-item .unread, .badge { color: #fff; background: var(--sp-violet); }
+        .chat-head { border-bottom-color: #ece7ef; }
+        .chat-head .t { color: #403647; }
+        .chat-head .s { color: #817987; }
+        .chat-msgs { background: #fbfafc; }
+        .msg .bubble { color: #514958; background: #fff; border-color: #e8e3eb; box-shadow: 0 2px 7px rgba(42,31,53,.025); }
+        .msg.mine .bubble { color: #4c3a60; background: #f1eafa; border-color: #e1d3ef; }
+        .msg .mwho { color: #857c8b; }
+        .msg .mwho.clickable:hover .who-name { color: #65428e; }
+        .msg .mtime { color: #9b939f; }
+        .msg.sys .bubble { color: #4d7b64; background: #eff8f2; border-color: #cde7d5; }
+        .role-badge { color: #68488b; background: #f3edf8; border-color: #e1d3ed; }
+        .role-badge.sys { color: #48755e; background: #eef7f1; border-color: #d1e9d8; }
+        .chat-input-row { background: #fff; border-top-color: #ece7ef; }
+        .chat-input-row .btn { flex: 0 0 auto; }
+        @media (max-width: 760px) {
+            .topbar { padding: .7rem .9rem; }
+            .home-categories { grid-template-columns: 1fr; }
+            .home-cat small { white-space: normal; }
+            .sidebar { background: #f8f6fa; border-bottom-color: var(--sp-line); }
+            .side-btn { background: #fff; border: 1px solid var(--sp-line); padding: .62rem .8rem; }
+            .side-btn.active { border-color: #d5c7e2; border-left: 3px solid var(--sp-violet); }
+            main { padding: 1rem .9rem 5rem; }
+            .user-chip { background: #f7f5f8; }
+            .chat-msgs { background: #fbfafc; }
+        }
     </style>
 </head>
 <body>
@@ -225,6 +335,7 @@
 <div class="topbar">
     <div class="logo" onclick="showPanel('home')">SPEKTRUM</div>
     <div class="top-right">
+        <button class="chip-btn share-btn" onclick="startCommunityPost()">✍️ Yeni paylaşım</button>
         <div class="user-chip" id="user-chip">…</div>
         <button class="chip-btn" onclick="showPanel('profil')">👤 Profil</button>
         <button class="chip-btn danger" onclick="logout()">Çıkış</button>
@@ -247,8 +358,24 @@
         <!-- ANA SAYFA -->
         <section class="panel active" id="panel-home">
             <div class="welcome">
+                <span class="welcome-kicker">SPEKTRUM · TOPLULUK FORUMU</span>
                 <h2 id="welcome-title">Merhaba 🌈</h2>
-                <p>Burası senin güvenli alanın. Rumuzunla paylaş, destek iste, topluluğa katıl — kimliğin her koşulda korunur.</p>
+                <p>Burası senin güvenli alanın. Rumuzunla paylaş, destek iste, topluluğa katıl — ne kadarını paylaşacağına sen karar verirsin.</p>
+                <button class="btn sm" onclick="startCommunityPost()">✍️ Toplulukta paylaşım başlat</button>
+            </div>
+            <div class="card community-index">
+                <div class="home-section-head"><div><span class="home-kicker">FORUM BAŞLIKLARI</span><h3>Bir başlık seç, topluluğa katıl</h3></div><span class="home-pill">Güvenli alan</span></div>
+                <div class="home-categories">
+                    <button class="home-cat" onclick="openCommunityCategory('genel')"><span class="home-cat-icon">💬</span><span><strong>Genel dayanışma</strong><small>Günlük paylaşım ve topluluk desteği</small></span><b>›</b></button>
+                    <button class="home-cat" onclick="openCommunityCategory('psikolojik')"><span class="home-cat-icon">🧠</span><span><strong>Psikolojik destek</strong><small>Uzmanla gizli destek kanalı ve deneyim paylaşımı</small></span><b>›</b></button>
+                    <button class="home-cat" onclick="openCommunityCategory('hukuk')"><span class="home-cat-icon">⚖️</span><span><strong>Hukuk ve haklar</strong><small>Hukuki destek talepleri ve güvenilir kaynaklar</small></span><b>›</b></button>
+                    <button class="home-cat" onclick="openCommunityCategory('barinma')"><span class="home-cat-icon">🏠</span><span><strong>Güvenli barınma</strong><small>Barınma ve yönlendirme desteği</small></span><b>›</b></button>
+                    <button class="home-cat" onclick="openCommunityCategory('topluluk')"><span class="home-cat-icon">🤝</span><span><strong>Topluluk ve sosyal ağ</strong><small>Dayanışma, gönüllülük ve birlikte olma</small></span><b>›</b></button>
+                </div>
+            </div>
+            <div class="card home-forum-feed">
+                <div class="home-section-head"><div><span class="home-kicker">SON PAYLAŞIMLAR</span><h3>Topluluktan</h3></div><button class="text-action" onclick="showPanel('topluluk')">Tüm akış →</button></div>
+                <div id="home-feed-list"><div class="empty">Yükleniyor…</div></div>
             </div>
             <div class="row">
                 <div class="card">
@@ -463,6 +590,16 @@
     async function logout() { await api('/api/auth/logout', 'POST', {}); location.href = '/'; }
 
     // ---------- Panel geçişi ----------
+    function openCommunityCategory(category) {
+        feedCategory = category;
+        showPanel('topluluk');
+    }
+
+    function startCommunityPost() {
+        showPanel('topluluk');
+        setTimeout(() => $('#post-content')?.focus(), 100);
+    }
+
     function showPanel(name) {
         document.querySelectorAll('.panel').forEach((p) => p.classList.remove('active'));
         document.querySelectorAll('.side-btn').forEach((b) => b.classList.toggle('active', b.dataset.panel === name));
@@ -477,7 +614,9 @@
     // ---------- Ana Sayfa ----------
     async function loadHome() {
         try {
-            const [{ notices }, packRes] = await Promise.all([api('/api/notices'), api('/api/support-pack/me')]);
+            const [{ notices }, packRes, feedRes] = await Promise.all([
+                api('/api/notices'), api('/api/support-pack/me'), api('/api/posts?category=tumu'),
+            ]);
             const box = $('#notices-list'); box.replaceChildren();
             if (!notices.length) box.append(h('div', { class: 'empty' }, 'Henüz duyuru yok.'));
             notices.forEach((n) => box.append(h('div', { class: 'notice' }, h('span', {}, '🔹'), h('span', {}, n.text))));
@@ -485,10 +624,14 @@
             const ps = $('#pack-status-home'); ps.replaceChildren();
             const p = packRes.pack;
             if (!p) ps.append(h('div', { class: 'empty' }, 'Destek çantanız henüz oluşmadı — ilk adımı atın.'));
-            else ps.append(h('div', { style: 'font-size:0.88rem;line-height:1.8;color:rgba(255,255,255,0.7)' },
+            else ps.append(h('div', { style: 'font-size:0.88rem;line-height:1.8;color:#675f6c' },
                 `Durum: ${p.closed ? '📦 Süreç kapandı' : '🗂 Aktif'}\n` +
                 `Onay: ${p.approved ? '✅ Onaylı' : '⏳ Onay yok'}\n` +
                 `Link sayısı: ${p.links.length}`));
+
+            const homeFeed = $('#home-feed-list'); homeFeed.replaceChildren();
+            if (!feedRes.posts.length) homeFeed.append(h('div', { class: 'empty' }, 'Henüz paylaşım yok. Dilersen ilk paylaşımı sen başlat.'));
+            feedRes.posts.slice(0, 3).forEach((post) => homeFeed.append(postCard(post)));
         } catch (e) { /* 401 handle edildi */ }
     }
 
@@ -520,7 +663,7 @@
             nameEl.style.cursor = 'pointer';
             nameEl.style.display = 'inline-block';
             nameEl.title = '✉️ Özel mesaj gönder';
-            nameEl.style.color = '#ff8fc7';
+            nameEl.style.color = '#704d98';
             nameEl.addEventListener('click', () => startDm(p.user_id));
         }
         const meta = h('div', { class: 'post-meta' },
@@ -528,7 +671,7 @@
             h('div', {},
                 h('div', {}, nameEl,
                     p.author_role === 'counselor' ? h('span', { class: 'role-badge', style: 'margin-left:0.4rem' }, '🎓 Uzman') : ''),
-                h('div', { style: 'font-size:0.72rem;color:rgba(255,255,255,0.35)' }, 'üye')),
+                h('div', { style: 'font-size:0.72rem;color:#918995' }, 'üye')),
             h('span', { class: 'cat-chip' }, `${icon} ${label}`),
             h('span', { class: 'post-time' }, fmtTime(p.created_at)));
         const content = h('p', { class: 'post-content' }, p.content);
