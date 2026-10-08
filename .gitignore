@@ -1,0 +1,16 @@
+# Bağımlılıklar
+node_modules/
+
+# Yerel veritabanı, yüklemeler ve ortam dosyaları (asla commit edilmez)
+data/
+.env
+.env.*
+!.env.example
+
+# Günlükler ve editör/işletim sistemi dosyaları
+*.log
+npm-debug.log*
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

@@ -1,0 +1,26 @@
+{
+  "name": "cinseldernek-spektrum",
+  "version": "1.0.0",
+  "private": true,
+  "description": "SPEKTRUM — dayanışma platformu: sohbet odaları, özel mesajlar, blog ve yönetim paneli",
+  "type": "module",
+  "main": "server/index.js",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "start": "node server/index.js",
+    "dev": "node --watch server/index.js",
+    "seed": "node server/scripts/seed.js",
+    "create-admin": "node server/scripts/create-admin.js",
+    "test": "node --test --test-concurrency=1 tests/*.test.js"
+  },
+  "license": "UNLICENSED",
+  "dependencies": {
+    "better-sqlite3": "^13.0.3",
+    "express": "^5.2.1",
+    "markdown-it": "^15.0.2",
+    "ws": "^8.22.0",
+    "zod": "^4.6.5"
+  }
+}
