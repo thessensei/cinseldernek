@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SPEKTRUM — Herkes İçin Yüksek Testesteron Seviyesi</title>
+    <title>SPEKTRUM — Güvenli Alan · Dayanışma · Özgürlük</title>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; }
 
@@ -14,336 +14,131 @@
             overflow-x: hidden;
         }
 
-        /* --- RAINBOW BG GRADIENT ANİMASYON --- */
         .bg-glow {
-            position: fixed;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: conic-gradient(
-                from 0deg,
-                rgba(255,0,128,0.08),
-                rgba(255,165,0,0.06),
-                rgba(255,255,0,0.05),
-                rgba(0,255,128,0.06),
-                rgba(0,200,255,0.08),
-                rgba(150,0,255,0.08),
-                rgba(255,0,128,0.08)
-            );
-            animation: spinGlow 20s linear infinite;
-            z-index: 0;
-            pointer-events: none;
+            position: fixed; top: -50%; left: -50%; width: 200%; height: 200%;
+            background: conic-gradient(from 0deg,
+                rgba(255,0,128,0.08), rgba(255,165,0,0.06), rgba(255,255,0,0.05),
+                rgba(0,255,128,0.06), rgba(0,200,255,0.08), rgba(150,0,255,0.08), rgba(255,0,128,0.08));
+            animation: spinGlow 20s linear infinite; z-index: 0; pointer-events: none;
         }
+        @keyframes spinGlow { to { transform: rotate(360deg); } }
 
-        @keyframes spinGlow {
-            to { transform: rotate(360deg); }
-        }
-
-        /* --- HEADER --- */
         header {
-            position: relative;
-            z-index: 10;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 1.2rem 2.5rem;
-            background: rgba(255,255,255,0.04);
-            backdrop-filter: blur(12px);
+            position: relative; z-index: 10; display: flex; justify-content: space-between; align-items: center;
+            padding: 1.2rem 2.5rem; background: rgba(255,255,255,0.04); backdrop-filter: blur(12px);
             border-bottom: 1px solid rgba(255,255,255,0.08);
         }
 
         .logo {
-            font-size: 1.6rem;
-            font-weight: 900;
-            letter-spacing: 2px;
+            font-size: 1.6rem; font-weight: 900; letter-spacing: 2px;
             background: linear-gradient(90deg, #ff0080, #ff8c00, #ffe000, #00e676, #00b0ff, #c962ff);
-            background-size: 300% auto;
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            background-size: 300% auto; -webkit-background-clip: text; -webkit-text-fill-color: transparent;
             animation: shineText 4s linear infinite;
         }
-
-        @keyframes shineText {
-            to { background-position: 300% center; }
-        }
-
+        @keyframes shineText { to { background-position: 300% center; } }
         .logo span {
-            font-size: 0.7rem;
-            display: block;
-            letter-spacing: 4px;
-            opacity: 0.6;
-            background: linear-gradient(90deg, #fff, #ccc);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            font-weight: 400;
+            font-size: 0.7rem; display: block; letter-spacing: 4px; opacity: 0.6;
+            background: linear-gradient(90deg, #fff, #ccc); -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent; font-weight: 400;
         }
 
-        nav { display: flex; gap: 0.6rem; }
-
+        nav { display: flex; gap: 0.6rem; align-items: center; }
         .nav-btn {
-            background: transparent;
-            border: 1px solid rgba(255,255,255,0.2);
-            color: #fff;
-            padding: 0.5rem 1.2rem;
-            border-radius: 50px;
-            cursor: pointer;
-            font-size: 0.9rem;
-            transition: all 0.3s;
+            background: transparent; border: 1px solid rgba(255,255,255,0.2); color: #fff;
+            padding: 0.5rem 1.2rem; border-radius: 50px; cursor: pointer; font-size: 0.9rem; transition: all 0.3s;
         }
-
-        .nav-btn:hover {
-            background: rgba(255,255,255,0.1);
-            border-color: rgba(255,255,255,0.5);
+        .nav-btn:hover { background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.5); }
+        .nav-btn.primary { background: linear-gradient(135deg, #ff0080, #c962ff); border: none; font-weight: 700; }
+        .nav-btn.primary:hover { transform: scale(1.05); box-shadow: 0 0 20px rgba(255,0,128,0.4); }
+        .quick-exit {
+            border: 1px solid rgba(255,60,90,0.5); color: #ff6b81; font-weight: 700;
         }
+        .quick-exit:hover { background: rgba(255,60,90,0.15); border-color: #ff6b81; }
 
-        .nav-btn.primary {
-            background: linear-gradient(135deg, #ff0080, #c962ff);
-            border: none;
-            font-weight: 700;
-        }
-
-        .nav-btn.primary:hover {
-            transform: scale(1.05);
-            box-shadow: 0 0 20px rgba(255,0,128,0.4);
-        }
-
-        /* --- HERO --- */
-        .hero {
-            position: relative;
-            z-index: 5;
-            text-align: center;
-            padding: 5rem 2rem 3rem;
-        }
-
+        .hero { position: relative; z-index: 5; text-align: center; padding: 5rem 2rem 3rem; }
         .hero-badge {
-            display: inline-block;
-            background: rgba(255,255,255,0.06);
-            border: 1px solid rgba(255,255,255,0.12);
-            border-radius: 50px;
-            padding: 0.4rem 1.2rem;
-            font-size: 0.8rem;
-            letter-spacing: 3px;
-            text-transform: uppercase;
-            margin-bottom: 1.5rem;
-            animation: fadeDown 0.8s ease;
+            display: inline-block; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12);
+            border-radius: 50px; padding: 0.4rem 1.2rem; font-size: 0.8rem; letter-spacing: 3px;
+            text-transform: uppercase; margin-bottom: 1.5rem; animation: fadeDown 0.8s ease;
         }
+        @keyframes fadeDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+        .hero h1 { font-size: clamp(2.5rem, 6vw, 4.5rem); font-weight: 900; line-height: 1.1; margin-bottom: 1.2rem; animation: fadeUp 0.8s ease 0.2s both; }
+        .hero h1 em { font-style: normal; background: linear-gradient(135deg, #ff0080, #ff8c00, #ffe000); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .hero p { max-width: 520px; margin: 0 auto 2.5rem; color: rgba(255,255,255,0.55); line-height: 1.8; font-size: 1.05rem; animation: fadeUp 0.8s ease 0.4s both; }
+        @keyframes fadeUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
 
-        @keyframes fadeDown {
-            from { opacity: 0; transform: translateY(-20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
+        .pride-bar { height: 5px; background: linear-gradient(90deg, #ff0018, #ffa52c, #ffff41, #008018, #0000f9, #86007d); width: 100%; position: relative; z-index: 5; }
 
-        .hero h1 {
-            font-size: clamp(2.5rem, 6vw, 4.5rem);
-            font-weight: 900;
-            line-height: 1.1;
-            margin-bottom: 1.2rem;
-            animation: fadeUp 0.8s ease 0.2s both;
-        }
-
-        .hero h1 em {
-            font-style: normal;
-            background: linear-gradient(135deg, #ff0080, #ff8c00, #ffe000);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .hero p {
-            max-width: 520px;
-            margin: 0 auto 2.5rem;
-            color: rgba(255,255,255,0.55);
-            line-height: 1.8;
-            font-size: 1.05rem;
-            animation: fadeUp 0.8s ease 0.4s both;
-        }
-
-        @keyframes fadeUp {
-            from { opacity: 0; transform: translateY(30px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* --- PRIDE STRIPE BAR --- */
-        .pride-bar {
-            height: 5px;
-            background: linear-gradient(90deg, #ff0018, #ffa52c, #ffff41, #008018, #0000f9, #86007d);
-            width: 100%;
-            position: relative;
-            z-index: 5;
-        }
-
-        /* --- CARDS SECTION --- */
-        .cards-section {
-            position: relative;
-            z-index: 5;
-            display: flex;
-            gap: 1rem;
-            justify-content: center;
-            flex-wrap: wrap;
-            padding: 3rem 2rem;
-        }
-
+        .cards-section { position: relative; z-index: 5; display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; padding: 3rem 2rem; }
         .feature-card {
-            background: rgba(255,255,255,0.04);
-            border: 1px solid rgba(255,255,255,0.08);
-            border-radius: 16px;
-            padding: 1.8rem;
-            width: 220px;
-            text-align: center;
-            transition: transform 0.3s, border-color 0.3s, box-shadow 0.3s;
+            background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 16px;
+            padding: 1.8rem; width: 220px; text-align: center; transition: transform 0.3s, border-color 0.3s, box-shadow 0.3s;
             animation: fadeUp 0.8s ease both;
         }
+        .feature-card:nth-child(1) { animation-delay: 0.1s; } .feature-card:nth-child(2) { animation-delay: 0.2s; }
+        .feature-card:nth-child(3) { animation-delay: 0.3s; } .feature-card:nth-child(4) { animation-delay: 0.4s; }
+        .feature-card:hover { transform: translateY(-6px); border-color: rgba(255,255,255,0.2); box-shadow: 0 12px 40px rgba(0,0,0,0.3); }
+        .card-icon { font-size: 2.2rem; margin-bottom: 0.8rem; display: block; }
+        .feature-card h3 { font-size: 0.95rem; margin-bottom: 0.5rem; color: #fff; }
+        .feature-card p { font-size: 0.8rem; color: rgba(255,255,255,0.4); line-height: 1.6; }
 
-        .feature-card:nth-child(1) { animation-delay: 0.1s; }
-        .feature-card:nth-child(2) { animation-delay: 0.2s; }
-        .feature-card:nth-child(3) { animation-delay: 0.3s; }
-        .feature-card:nth-child(4) { animation-delay: 0.4s; }
-
-        .feature-card:hover {
-            transform: translateY(-6px);
-            border-color: rgba(255,255,255,0.2);
-            box-shadow: 0 12px 40px rgba(0,0,0,0.3);
-        }
-
-        .card-icon {
-            font-size: 2.2rem;
-            margin-bottom: 0.8rem;
-            display: block;
-        }
-
-        .feature-card h3 {
-            font-size: 0.95rem;
-            margin-bottom: 0.5rem;
-            color: #fff;
-        }
-
-        .feature-card p {
-            font-size: 0.8rem;
-            color: rgba(255,255,255,0.4);
-            line-height: 1.6;
-        }
-
-        /* --- AUTH SECTION --- */
-        .auth-section {
-            position: relative;
-            z-index: 5;
-            display: flex;
-            justify-content: center;
-            padding: 0 2rem 5rem;
-        }
-
+        .auth-section { position: relative; z-index: 5; display: flex; justify-content: center; padding: 0 2rem 5rem; }
         .auth-card {
-            background: rgba(255,255,255,0.05);
-            border: 1px solid rgba(255,255,255,0.1);
-            backdrop-filter: blur(20px);
-            border-radius: 20px;
-            padding: 2.5rem;
-            width: 100%;
-            max-width: 420px;
-            animation: fadeUp 0.8s ease 0.5s both;
+            background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); backdrop-filter: blur(20px);
+            border-radius: 20px; padding: 2.5rem; width: 100%; max-width: 420px; animation: fadeUp 0.8s ease 0.5s both;
         }
-
-        .auth-tabs {
-            display: flex;
-            background: rgba(255,255,255,0.05);
-            border-radius: 10px;
-            padding: 4px;
-            margin-bottom: 2rem;
-        }
-
-        .tab-btn {
-            flex: 1;
-            background: transparent;
-            border: none;
-            color: rgba(255,255,255,0.4);
-            padding: 0.6rem;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 0.9rem;
-            transition: all 0.3s;
-        }
-
-        .tab-btn.active {
-            background: linear-gradient(135deg, #ff0080, #c962ff);
-            color: #fff;
-            font-weight: 700;
-        }
+        .auth-tabs { display: flex; background: rgba(255,255,255,0.05); border-radius: 10px; padding: 4px; margin-bottom: 1.6rem; }
+        .tab-btn { flex: 1; background: transparent; border: none; color: rgba(255,255,255,0.4); padding: 0.6rem; border-radius: 8px; cursor: pointer; font-size: 0.9rem; transition: all 0.3s; }
+        .tab-btn.active { background: linear-gradient(135deg, #ff0080, #c962ff); color: #fff; font-weight: 700; }
 
         .auth-form { display: flex; flex-direction: column; gap: 0.9rem; }
-
-        .auth-form input,
-        .auth-form select {
-            background: rgba(255,255,255,0.06);
-            border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 10px;
-            padding: 0.85rem 1rem;
-            color: #fff;
-            font-size: 0.95rem;
-            transition: border-color 0.3s;
-            outline: none;
+        .auth-form input, .auth-form select {
+            background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); border-radius: 10px;
+            padding: 0.85rem 1rem; color: #fff; font-size: 0.95rem; transition: border-color 0.3s; outline: none; width: 100%;
         }
-
         .auth-form input::placeholder { color: rgba(255,255,255,0.3); }
-
-        .auth-form input:focus,
-        .auth-form select:focus {
-            border-color: rgba(255,0,128,0.5);
-            box-shadow: 0 0 0 3px rgba(255,0,128,0.1);
-        }
-
+        .auth-form input:focus, .auth-form select:focus { border-color: rgba(255,0,128,0.5); box-shadow: 0 0 0 3px rgba(255,0,128,0.1); }
         .auth-form select option { background: #1a1a1a; }
 
         .submit-btn {
-            background: linear-gradient(135deg, #ff0080, #c962ff);
-            border: none;
-            color: #fff;
-            padding: 1rem;
-            border-radius: 10px;
-            font-size: 1rem;
-            font-weight: 800;
-            cursor: pointer;
-            letter-spacing: 1px;
-            transition: all 0.3s;
-            position: relative;
-            overflow: hidden;
+            background: linear-gradient(135deg, #ff0080, #c962ff); border: none; color: #fff; padding: 1rem;
+            border-radius: 10px; font-size: 1rem; font-weight: 800; cursor: pointer; letter-spacing: 1px; transition: all 0.3s;
         }
-
-        .submit-btn::after {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background: linear-gradient(135deg, rgba(255,255,255,0.15), transparent);
-            opacity: 0;
-            transition: opacity 0.3s;
-        }
-
-        .submit-btn:hover::after { opacity: 1; }
         .submit-btn:hover { transform: scale(1.02); box-shadow: 0 8px 30px rgba(255,0,128,0.35); }
+        .submit-btn:disabled { opacity: 0.6; cursor: wait; transform: none; }
 
-        .form-note {
-            text-align: center;
-            font-size: 0.75rem;
-            color: rgba(255,255,255,0.25);
-            margin-top: 0.5rem;
+        .oauth-divider { display: flex; align-items: center; gap: 0.8rem; margin: 1.3rem 0 0.9rem; color: rgba(255,255,255,0.3); font-size: 0.75rem; }
+        .oauth-divider::before, .oauth-divider::after { content: ''; flex: 1; height: 1px; background: rgba(255,255,255,0.1); }
+
+        .google-btn {
+            width: 100%; display: flex; align-items: center; justify-content: center; gap: 0.7rem;
+            background: #fff; color: #1f1f1f; border: none; border-radius: 10px; padding: 0.85rem 1rem;
+            font-size: 0.95rem; font-weight: 600; cursor: pointer; transition: all 0.3s;
         }
+        .google-btn:hover { box-shadow: 0 4px 20px rgba(255,255,255,0.15); transform: translateY(-1px); }
 
+        .demo-btn {
+            width: 100%; margin-top: 0.7rem; background: transparent; border: 1px dashed rgba(255,255,255,0.25);
+            color: rgba(255,255,255,0.65); border-radius: 10px; padding: 0.75rem 1rem; font-size: 0.85rem; cursor: pointer; transition: all 0.3s;
+        }
+        .demo-btn:hover { border-color: rgba(0,230,118,0.6); color: #00e676; background: rgba(0,230,118,0.06); }
+
+        .form-msg {
+            display: none; text-align: center; font-size: 0.85rem; border-radius: 10px; padding: 0.7rem 1rem; margin-bottom: 0.8rem; line-height: 1.5;
+        }
+        .form-msg.error { display: block; background: rgba(255,60,90,0.12); border: 1px solid rgba(255,60,90,0.4); color: #ff8fa0; }
+        .form-msg.success { display: block; background: rgba(0,230,118,0.1); border: 1px solid rgba(0,230,118,0.35); color: #58eba0; }
+
+        .form-note { text-align: center; font-size: 0.75rem; color: rgba(255,255,255,0.25); margin-top: 0.9rem; }
         .hidden { display: none; }
 
-        /* --- FOOTER TAG --- */
-        footer {
-            position: relative;
-            z-index: 5;
-            text-align: center;
-            padding: 1.5rem;
-            border-top: 1px solid rgba(255,255,255,0.05);
-            font-size: 0.75rem;
-            color: rgba(255,255,255,0.2);
-        }
+        footer { position: relative; z-index: 5; text-align: center; padding: 1.5rem; border-top: 1px solid rgba(255,255,255,0.05); font-size: 0.75rem; color: rgba(255,255,255,0.2); }
 
         @media (max-width: 600px) {
             header { padding: 1rem 1.2rem; }
             .logo { font-size: 1.2rem; }
             .feature-card { width: 160px; padding: 1.2rem; }
+            nav { flex-wrap: wrap; justify-content: flex-end; }
         }
     </style>
 </head>
@@ -351,86 +146,80 @@
 
 <div class="bg-glow"></div>
 
-<!-- HEADER -->
 <header>
     <div class="logo">
         SPEKTRUM
-        <span>Herkes İçin Yüksek Testesteron Seviyesi</span>
+        <span>Güvenli Alan · Dayanışma · Özgürlük</span>
     </div>
     <nav>
-        <button class="nav-btn" onclick="switchTab('login')">Giriş</button>
-        <button class="nav-btn primary" onclick="switchTab('register')">Katıl</button>
+        <button class="nav-btn quick-exit" onclick="quickExit()" title="Siteyi hemen terk et">⚡ Hızlı Çıkış</button>
+        <button class="nav-btn" id="nav-login" onclick="goAuth('login')">Giriş</button>
+        <button class="nav-btn primary" id="nav-register" onclick="goAuth('register')">Katıl</button>
     </nav>
 </header>
 
 <div class="pride-bar"></div>
 
-<!-- HERO -->
 <section class="hero">
     <div class="hero-badge">🏳️‍🌈 Güvenli Alan · Dayanışma · Özgürlük</div>
     <h1>Sen olduğun gibi<br><em>mükemmelsin.</em></h1>
     <p>LGBTİ+, queer, interseks, aseksüel ya da kim olursan ol — bu platform sana ait. Destek, hukuk, psikoloji, topluluk.</p>
 </section>
 
-<!-- FEATURE CARDS -->
 <div class="cards-section">
-    <div class="feature-card">
-        <span class="card-icon">🧠</span>
-        <h3>Psikolojik Destek</h3>
-        <p>Uzman danışmanlarla güvenli sohbet</p>
-    </div>
-    <div class="feature-card">
-        <span class="card-icon">⚖️</span>
-        <h3>Hukuki Yardım</h3>
-        <p>Hakların için yanında olan avukatlar</p>
-    </div>
-    <div class="feature-card">
-        <span class="card-icon">🤝</span>
-        <h3>Topluluk Ağı</h3>
-        <p>Seni anlayan insanlarla bağlan</p>
-    </div>
-    <div class="feature-card">
-        <span class="card-icon">🏠</span>
-        <h3>Güvenli Sığınak</h3>
-        <p>Acil barınma ve yönlendirme</p>
-    </div>
+    <div class="feature-card"><span class="card-icon">🧠</span><h3>Psikolojik Destek</h3><p>Uzman psikologla özel sohbet kanalı</p></div>
+    <div class="feature-card"><span class="card-icon">⚖️</span><h3>Hukuki Yardım</h3><p>Hakların için yanında olan avukatlar</p></div>
+    <div class="feature-card"><span class="card-icon">💬</span><h3>Sohbet &amp; Topluluk</h3><p>Global sohbet + iki kişilik özel mesajlar</p></div>
+    <div class="feature-card"><span class="card-icon">🏠</span><h3>Güvenli Sığınak</h3><p>Acil barınma ve yönlendirme</p></div>
 </div>
 
-<!-- AUTH -->
-<div class="auth-section">
+<div class="auth-section" id="auth-section">
     <div class="auth-card">
         <div class="auth-tabs">
             <button class="tab-btn active" id="tab-login" onclick="switchTab('login')">Giriş Yap</button>
             <button class="tab-btn" id="tab-register" onclick="switchTab('register')">Kayıt Ol</button>
         </div>
 
+        <div class="form-msg" id="form-msg"></div>
+
         <!-- GİRİŞ -->
         <div id="login-form">
-            <form class="auth-form" onsubmit="return false;">
-                <input type="email" placeholder="✉️  E-posta" required>
-                <input type="password" placeholder="🔒  Parola" required>
-                <button type="submit" class="submit-btn">GİRİŞ YAP</button>
+            <form class="auth-form" id="login-form-el">
+                <input type="email" id="login-email" placeholder="✉️  E-posta" autocomplete="email" required>
+                <input type="password" id="login-password" placeholder="🔒  Parola" autocomplete="current-password" required>
+                <button type="submit" class="submit-btn" id="login-btn">GİRİŞ YAP</button>
             </form>
+            <div class="oauth-divider">veya</div>
+            <button class="google-btn" onclick="googleLogin()">
+                <svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><path fill="#4285F4" d="M17.64 9.2c0-.64-.06-1.25-.16-1.84H9v3.48h4.84a4.14 4.14 0 0 1-1.8 2.72v2.26h2.92c1.7-1.57 2.68-3.88 2.68-6.62z"/><path fill="#34A853" d="M9 18c2.43 0 4.47-.8 5.96-2.18l-2.92-2.26c-.8.54-1.84.86-3.04.86-2.34 0-4.32-1.58-5.03-3.7H.96v2.33A9 9 0 0 0 9 18z"/><path fill="#FBBC05" d="M3.97 10.72A5.41 5.41 0 0 1 3.68 9c0-.6.1-1.18.28-1.72V4.95H.96A9 9 0 0 0 0 9c0 1.45.35 2.82.96 4.05l3.01-2.33z"/><path fill="#EA4335" d="M9 3.58c1.32 0 2.5.45 3.44 1.35L15 2.36A9 9 0 0 0 .96 4.95l3.01 2.33C4.68 5.16 6.66 3.58 9 3.58z"/></svg>
+                Google ile devam et
+            </button>
+            <button class="demo-btn" onclick="demoLogin()">👀 Kayıt olmadan demo hesapla keşfet</button>
             <p class="form-note">Verilerini asla paylaşmıyoruz. Gizlilik önce gelir.</p>
         </div>
 
         <!-- KAYIT -->
         <div id="register-form" class="hidden">
-            <form class="auth-form" onsubmit="return false;">
-                <input type="text" placeholder="✨  Rumuz veya İsim" required>
-                <input type="email" placeholder="✉️  E-posta" required>
-                <input type="password" placeholder="🔒  Parola Oluştur" required>
-                <select required>
+            <form class="auth-form" id="register-form-el">
+                <input type="text" id="reg-name" placeholder="✨  Rumuz veya İsim" maxlength="40" required>
+                <input type="email" id="reg-email" placeholder="✉️  E-posta" autocomplete="email" required>
+                <input type="password" id="reg-password" placeholder="🔒  Parola Oluştur (en az 8 karakter)" autocomplete="new-password" minlength="8" required>
+                <select id="reg-area" required>
                     <option value="" disabled selected>💜  Hangi Alanda Destek İstiyorsun?</option>
                     <option value="psikolojik">🧠 Psikolojik Destek</option>
                     <option value="hukuk">⚖️ Hukuki Danışmanlık</option>
-                    <option value="topluluk">🤝 Topluluk & Sosyal Ağ</option>
+                    <option value="topluluk">🤝 Topluluk &amp; Sosyal Ağ</option>
                     <option value="barinma">🏠 Güvenli Barınma</option>
                     <option value="gonullu">🌈 Gönüllü Olmak İstiyorum</option>
                 </select>
-                <button type="submit" class="submit-btn">ARAMIZA KATIL 🏳️‍🌈</button>
+                <button type="submit" class="submit-btn" id="register-btn">ARAMIZA KATIL 🏳️‍🌈</button>
             </form>
-            <p class="form-note">Anonim kayıt desteklenir. Gizlilik garantisi.</p>
+            <div class="oauth-divider">veya</div>
+            <button class="google-btn" onclick="googleLogin()">
+                <svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><path fill="#4285F4" d="M17.64 9.2c0-.64-.06-1.25-.16-1.84H9v3.48h4.84a4.14 4.14 0 0 1-1.8 2.72v2.26h2.92c1.7-1.57 2.68-3.88 2.68-6.62z"/><path fill="#34A853" d="M9 18c2.43 0 4.47-.8 5.96-2.18l-2.92-2.26c-.8.54-1.84.86-3.04.86-2.34 0-4.32-1.58-5.03-3.7H.96v2.33A9 9 0 0 0 9 18z"/><path fill="#FBBC05" d="M3.97 10.72A5.41 5.41 0 0 1 3.68 9c0-.6.1-1.18.28-1.72V4.95H.96A9 9 0 0 0 0 9c0 1.45.35 2.82.96 4.05l3.01-2.33z"/><path fill="#EA4335" d="M9 3.58c1.32 0 2.5.45 3.44 1.35L15 2.36A9 9 0 0 0 .96 4.95l3.01 2.33C4.68 5.16 6.66 3.58 9 3.58z"/></svg>
+                Google ile kayıt ol
+            </button>
+            <p class="form-note">Rumuzla katılabilirsin. Gizlilik garantisi.</p>
         </div>
     </div>
 </div>
@@ -440,24 +229,99 @@
 </footer>
 
 <script>
+    const msg = document.getElementById('form-msg');
+
+    function showMsg(text, type) {
+        msg.textContent = text;
+        msg.className = 'form-msg ' + type;
+    }
+    function clearMsg() { msg.className = 'form-msg'; msg.textContent = ''; }
+
     function switchTab(type) {
         const loginForm = document.getElementById('login-form');
         const registerForm = document.getElementById('register-form');
-        const tabLogin = document.getElementById('tab-login');
-        const tabRegister = document.getElementById('tab-register');
-
-        if (type === 'login') {
-            loginForm.classList.remove('hidden');
-            registerForm.classList.add('hidden');
-            tabLogin.classList.add('active');
-            tabRegister.classList.remove('active');
-        } else {
-            registerForm.classList.remove('hidden');
-            loginForm.classList.add('hidden');
-            tabRegister.classList.add('active');
-            tabLogin.classList.remove('active');
-        }
+        document.getElementById('tab-login').classList.toggle('active', type === 'login');
+        document.getElementById('tab-register').classList.toggle('active', type !== 'login');
+        loginForm.classList.toggle('hidden', type !== 'login');
+        registerForm.classList.toggle('hidden', type === 'login');
+        clearMsg();
     }
+
+    function goAuth(type) {
+        switchTab(type);
+        document.getElementById('auth-section').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function quickExit() {
+        // Tarayıcı geçmişini dağıtmadan nötr bir sayfaya anında gider
+        location.replace('https://www.google.com/search?q=hava+durumu');
+    }
+
+    function googleLogin() { location.href = '/auth/google'; }
+
+    async function api(path, body) {
+        const res = await fetch(path, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(body),
+        });
+        const data = await res.json().catch(() => ({ ok: false, error: 'Sunucuya ulaşılamadı.' }));
+        return data;
+    }
+
+    async function demoLogin() {
+        const data = await api('/api/auth/demo', {});
+        if (data.ok) location.href = '/app.html';
+        else showMsg(data.error || 'Demo girişi yapılamadı.', 'error');
+    }
+
+    // E-posta + parola girişi
+    document.getElementById('login-form-el').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const btn = document.getElementById('login-btn');
+        btn.disabled = true; clearMsg();
+        const data = await api('/api/auth/login', {
+            email: document.getElementById('login-email').value,
+            password: document.getElementById('login-password').value,
+        });
+        btn.disabled = false;
+        if (data.ok) { showMsg('Giriş başarılı, yönlendiriliyorsun…', 'success'); location.href = '/app.html'; }
+        else showMsg(data.error || 'Giriş yapılamadı.', 'error');
+    });
+
+    // Kayıt
+    document.getElementById('register-form-el').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const btn = document.getElementById('register-btn');
+        btn.disabled = true; clearMsg();
+        const data = await api('/api/auth/register', {
+            name: document.getElementById('reg-name').value,
+            email: document.getElementById('reg-email').value,
+            password: document.getElementById('reg-password').value,
+            supportArea: document.getElementById('reg-area').value,
+        });
+        btn.disabled = false;
+        if (data.ok) { showMsg('Aramıza hoş geldin! Yönlendiriliyorsun…', 'success'); location.href = '/app.html'; }
+        else showMsg(data.error || 'Kayıt oluşturulamadı.', 'error');
+    });
+
+    // Google hata parametreleri
+    const gerr = new URLSearchParams(location.search).get('gerror');
+    if (gerr) {
+        const map = { cancelled: 'Google girişi iptal edildi.', state: 'Güvenlik doğrulaması başarısız, tekrar dene.', failed: 'Google girişi tamamlanamadı.' };
+        showMsg(map[gerr] || 'Google girişi tamamlanamadı.', 'error');
+    }
+
+    // Zaten girişliyse nav'ı panele dönüştür
+    fetch('/api/me').then((r) => (r.ok ? r.json() : null)).then((data) => {
+        if (data && data.ok) {
+            const nav = document.querySelector('nav');
+            document.getElementById('nav-login').remove();
+            const btn = document.getElementById('nav-register');
+            btn.textContent = `Merhaba, ${data.user.rumuz} → Panel`;
+            btn.onclick = () => (location.href = '/app.html');
+        }
+    }).catch(() => {});
 </script>
 
 </body>
