@@ -29,15 +29,19 @@ app.use((req, res, next) => {
   next();
 });
 
-// Güvenlik başlıkları
+// Güvenlik başlıkları. Arena önizlemesi iframe içinde gösterildiğinde, yalnızca geçici e2b.app hostuna izin ver.
 app.use((req, res, next) => {
+  const host = req.hostname || req.get('host') || '';
+  const isArenaPreview = /\.e2b\.app(?::\d+)?$/i.test(host);
   res.setHeader('X-Content-Type-Options', 'nosniff');
-  res.setHeader('X-Frame-Options', 'DENY');
+  if (isArenaPreview) res.removeHeader('X-Frame-Options');
+  else res.setHeader('X-Frame-Options', 'DENY');
   res.setHeader('Referrer-Policy', 'same-origin');
   res.setHeader(
     'Content-Security-Policy',
     "default-src 'self'; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'; " +
-    "img-src 'self' data: https:; connect-src 'self'; font-src 'self' https://fonts.gstatic.com; frame-ancestors 'none'; base-uri 'self'"
+    "img-src 'self' data: https:; connect-src 'self'; font-src 'self' https://fonts.gstatic.com; " +
+    `frame-ancestors ${isArenaPreview ? "'self' https:" : "'none'"}; base-uri 'self'`
   );
   next();
 });
