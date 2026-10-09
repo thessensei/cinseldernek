@@ -1,12 +1,14 @@
 {
   "name": "spektrum",
-  "version": "2.0.0",
-  "description": "SPEKTRUM — güvenli alan, dayanışma ve özgürlük platformu. Express + SQLite (node:sqlite) backend.",
+  "version": "2.1.0",
+  "description": "SPEKTRUM — güvenli topluluk ve dayanışma platformu.",
   "main": "server.js",
   "type": "commonjs",
   "scripts": {
     "start": "node server.js",
-    "dev": "NODE_ENV=development node server.js"
+    "dev": "NODE_ENV=development node server.js",
+    "test": "node --test",
+    "check": "node --check server.js && node --check auth.js && node --check api.js && node --check chat.js && node --check db.js && node --check public/landing.js && node --check public/app.js && node --check test/smoke.test.js && node --check test/production.test.js && node --check test/counselor.test.js"
   },
   "engines": {
     "node": ">=22.1.0"

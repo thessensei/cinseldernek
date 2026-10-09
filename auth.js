@@ -13,19 +13,26 @@ function hashPassword(password) {
   return `scrypt:${salt}:${hash}`;
 }
 function verifyPassword(password, stored) {
-  if (!stored || !stored.startsWith('scrypt:')) return false;
+  if (!stored || !stored.startsWith('scrypt:') || String(password).length > 128) return false;
   const [, salt, hash] = stored.split(':');
-  const candidate = crypto.scryptSync(password, salt, 64);
+  if (!salt || !/^[a-f0-9]{128}$/i.test(hash || '')) return false;
+  const candidate = crypto.scryptSync(String(password), salt, 64);
   const real = Buffer.from(hash, 'hex');
   return candidate.length === real.length && crypto.timingSafeEqual(candidate, real);
 }
 
 // ---------- ÇEREZLER ----------
-function setSessionCookie(res, token, expires) {
+function cookiePolicy(req) {
+  const host = req?.hostname || req?.get?.('host') || '';
+  const isPreview = /\.e2b\.app(?::\d+)?$/i.test(host);
+  const secure = IS_PROD || Boolean(req?.secure) || isPreview;
+  // Arena renders previews in a cross-site iframe; SameSite=None is required there.
+  return { secure, sameSite: isPreview ? 'none' : 'lax', partitioned: isPreview };
+}
+function setSessionCookie(res, token, expires, req) {
   res.cookie(COOKIE_NAME, token, {
     httpOnly: true,
-    sameSite: 'lax',
-    secure: IS_PROD,             // preview/canlı (HTTPS) ortamda gerekli; yerelde http çalışır
+    ...cookiePolicy(req),
     expires: new Date(expires),
     path: '/',
   });
@@ -36,7 +43,7 @@ function publicUser(u) {
   if (!u) return null;
   return {
     id: u.id, email: u.email, name: u.name, rumuz: u.rumuz,
-    provider: u.provider, supportArea: u.support_area, createdAt: u.created_at,
+    provider: u.provider, supportArea: u.support_area, role: u.role || 'member', createdAt: u.created_at,
   };
 }
 
@@ -83,18 +90,19 @@ function registerRoutes(app) {
       const em = clean(email, 120);
       if (!nm || nm.length < 2) return res.status(400).json({ ok: false, error: 'İsim/rumuz en az 2 karakter olmalı.' });
       if (!emailOk(em)) return res.status(400).json({ ok: false, error: 'Geçerli bir e-posta gir.' });
-      if (!password || String(password).length < 8)
-        return res.status(400).json({ ok: false, error: 'Parola en az 8 karakter olmalı.' });
+      if (!password || String(password).length < 8 || String(password).length > 128)
+        return res.status(400).json({ ok: false, error: 'Parola 8–128 karakter arasında olmalı.' });
       if (db.getUserByEmail(em)) return res.status(409).json({ ok: false, error: 'Bu e-postayla bir hesap zaten var. Giriş yapmayı dene.' });
 
       const user = db.createUser({
         email: em,
         passwordHash: hashPassword(String(password)),
         name: nm, rumuz: nm,
-        supportArea: clean(supportArea, 30) || null,
+        supportArea: new Set(['psikolojik', 'hukuk', 'topluluk', 'barinma', 'gonullu', 'diger']).has(clean(supportArea, 30))
+          ? clean(supportArea, 30) : null,
       });
       const { token, expires } = db.createSession(user.id);
-      setSessionCookie(res, token, expires);
+      setSessionCookie(res, token, expires, req);
       res.json({ ok: true, user: publicUser(user) });
     } catch (err) {
       console.error('[register]', err);
@@ -110,7 +118,7 @@ function registerRoutes(app) {
       if (!user || !verifyPassword(String(password || ''), user.password_hash))
         return res.status(401).json({ ok: false, error: 'E-posta veya parola hatalı.' });
       const { token, expires } = db.createSession(user.id);
-      setSessionCookie(res, token, expires);
+      setSessionCookie(res, token, expires, req);
       res.json({ ok: true, user: publicUser(user) });
     } catch (err) {
       console.error('[login]', err);
@@ -118,8 +126,10 @@ function registerRoutes(app) {
     }
   });
 
-  // DEMO — tek tıkla keşif hesabı
-  app.post('/api/auth/demo', (req, res) => {
+  // DEMO — only enabled by default outside production.
+  const demoEnabled = () => process.env.NODE_ENV !== 'production' || process.env.ENABLE_DEMO === 'true';
+  app.post('/api/auth/demo', loginLimiter, (req, res) => {
+    if (!demoEnabled()) return res.status(404).json({ ok: false, error: 'Demo hesabı kapalı.' });
     let user = db.getUserByEmail('demo@spektrum.local');
     if (!user) {
       user = db.createUser({
@@ -130,7 +140,7 @@ function registerRoutes(app) {
       });
     }
     const { token, expires } = db.createSession(user.id);
-    setSessionCookie(res, token, expires);
+    setSessionCookie(res, token, expires, req);
     res.json({ ok: true, user: publicUser(user) });
   });
 
@@ -147,24 +157,14 @@ function registerRoutes(app) {
   const G_ID = process.env.GOOGLE_CLIENT_ID;
   const G_SECRET = process.env.GOOGLE_CLIENT_SECRET;
   const googleConfigured = () => Boolean(G_ID && G_SECRET);
+  app.get('/api/public-config', (req, res) => res.json({ ok: true, googleEnabled: googleConfigured(), demoEnabled: demoEnabled() }));
 
-  const googleUnavailablePage = (res) => res.status(503).send(`<!DOCTYPE html>
-<html lang="tr"><head><meta charset="utf-8"><title>Google Girişi — Kurulum Gerekli</title>
-<style>body{background:#0d0d0d;color:#fff;font-family:'Segoe UI',sans-serif;display:flex;align-items:center;justify-content:center;min-height:100vh;margin:0}
-.card{max-width:560px;padding:2.5rem;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:18px;line-height:1.7}
-code{background:rgba(255,255,255,.1);padding:2px 8px;border-radius:6px;font-size:.85rem}
-a{color:#ff66b3}h1{font-size:1.3rem}</style></head><body><div class="card">
-<h1>🔐 Google ile giriş henüz yapılandırılmadı</h1>
-<p>E-posta + parola ile hemen kayıt olup giriş yapabilirsin. Google girişini açmak için:</p>
-<ol><li><a href="https://console.cloud.google.com/apis/credentials" target="_blank" rel="noopener">Google Cloud Console → Kimlik Bilgileri</a> sayfasında <b>OAuth Client ID (Web)</b> oluştur.</li>
-<li>Yetkili yönlendirme URI'sine <code>/auth/google/callback</code> ekle (ör. <code>http://localhost:3000/auth/google/callback</code>).</li>
-<li>Projedeki <code>.env</code> dosyasına <code>GOOGLE_CLIENT_ID</code> ve <code>GOOGLE_CLIENT_SECRET</code> değerlerini yazıp sunucuyu yeniden başlat.</li></ol>
-<p><a href="/">← Ana sayfaya dön</a></p></div></body></html>`);
+  const googleUnavailablePage = (res) => res.redirect('/?gerror=unavailable');
 
   app.get('/auth/google', (req, res) => {
     if (!googleConfigured()) return googleUnavailablePage(res);
     const state = crypto.randomBytes(16).toString('hex');
-    res.cookie(STATE_COOKIE, state, { httpOnly: true, sameSite: 'lax', secure: IS_PROD, maxAge: 10 * 60 * 1000, path: '/' });
+    res.cookie(STATE_COOKIE, state, { httpOnly: true, ...cookiePolicy(req), maxAge: 10 * 60 * 1000, path: '/' });
     const redirectUri = `${req.protocol}://${req.get('host')}/auth/google/callback`;
     const params = new URLSearchParams({
       client_id: G_ID, redirect_uri: redirectUri, response_type: 'code',
@@ -207,7 +207,7 @@ a{color:#ff66b3}h1{font-size:1.3rem}</style></head><body><div class="card">
         user = db.createUser({ email: profile.email, name: nm, rumuz: nm, provider: 'google', providerId: profile.sub });
       }
       const { token, expires } = db.createSession(user.id);
-      setSessionCookie(res, token, expires);
+      setSessionCookie(res, token, expires, req);
       res.redirect('/app.html');
     } catch (err) {
       console.error('[google/callback]', err);
