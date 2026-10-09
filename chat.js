@@ -19,6 +19,47 @@ function serializeMessages(rows, meId) {
   }));
 }
 
+// Yeni mesaj bildirimi: DM'de karşı tarafa; destek kanalında üye ↔ uzman eşleşmesi.
+// Global oda bildirim üretmez (çok gürültülü olurdu).
+function notifyNewMessage(convo, sender, content) {
+  if (!sender || sender.role === 'system') return;
+  const preview = content.length > 80 ? content.slice(0, 80) + '…' : content;
+  if (convo.type === 'dm') {
+    for (const peer of db.otherConversationMembers(convo.id, sender.id)) {
+      db.createNotification({
+        userId: peer.id, actorId: sender.id, type: 'dm',
+        title: '✉️ Yeni özel mesaj',
+        body: `${sender.rumuz}: ${preview}`,
+        link: convo.id,
+      });
+    }
+    return;
+  }
+  if (convo.type === 'support') {
+    if (sender.role === 'member') {
+      for (const c of db.listCounselors()) {
+        db.createNotification({
+          userId: c.id, actorId: sender.id, type: 'support_msg',
+          title: '🧠 Danışan kanalında yeni mesaj',
+          body: `${sender.rumuz}: ${preview}`,
+          link: convo.id,
+        });
+      }
+    } else {
+      // uzman → danışan
+      const owner = db.getSupportConversationOwner(convo.id);
+      if (owner) {
+        db.createNotification({
+          userId: owner.id, actorId: sender.id, type: 'support_msg',
+          title: '🧠 Psikolog destek kanalında yeni mesaj',
+          body: `${sender.rumuz}: ${preview}`,
+          link: convo.id,
+        });
+      }
+    }
+  }
+}
+
 function chatRoutes(app, requireAuth, writeLimiter) {
   app.use('/api/chat', requireAuth);
 
@@ -99,6 +140,9 @@ function chatRoutes(app, requireAuth, writeLimiter) {
     db.addMessage(convo.id, req.user.id, content);
     if (convo.type !== 'global') { db.upsertMembership(convo.id, req.user.id); db.markRead(convo.id, req.user.id); }
     else db.upsertMembership(convo.id, req.user.id);
+
+    // Bildirim: karşı tarafa haber ver (global hariç)
+    notifyNewMessage(convo, req.user, content);
 
     // Psikolog destek kanalı: ilk temasta sıcak otomatik karşılama (üye yazdıysa ve daha önce sistem yazmadıysa)
     if (convo.type === 'support' && req.user.role === 'member' && !db.systemMessageExists(convo.id)) {

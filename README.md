@@ -16,6 +16,7 @@ LGBTİ+ dayanışma platformu. **Express + SQLite (node:sqlite)** backend'li, ü
   - 💜 **Destek Talepleri** — psikolojik / hukuk / barınma talebi açma ve durum takibi
   - 🎒 **Destek Çantası** — üyenin kendi süreç sayfası; onay verdiğinde "yakın arkadaş profil linkleri"ni paylaşma/görme. Onay tek yönlüdür (bir kez verildi mi kalıcı); kapatma isteği yalnızca onaylı hesaplarda geçerli olur
   - 📚 **Kaynaklar** — güvenilir kurum ve yardım hatları
+  - 🔔 **Bildirim Merkezi** — yeni özel mesaj, psikolog destek kanalı mesajı, paylaşımına gelen yorum ve destekler için zil ikonlu bildirim paneli
   - 👤 **Profil** — rumuz, isim, destek alanı düzenleme
 - ⚡ **Hızlı Çıkış** butonu (acil durumlarda siteyi anında terk eder — bu tarz platformlar için kritik bir güvenlik özelliği)
 
