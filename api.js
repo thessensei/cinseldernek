@@ -39,6 +39,14 @@ function apiRoutes(app, requireAuth, writeLimiter) {
     const post = db.getPost(req.params.id);
     if (!post) return res.status(404).json({ ok: false, error: 'Paylaşım bulunamadı.' });
     const supported = db.toggleReaction(post.id, req.user.id);
+    if (supported && post.user_id !== req.user.id) {
+      db.createNotification({
+        userId: post.user_id, actorId: req.user.id, type: 'react',
+        title: '💜 Paylaşımın desteklendi',
+        body: `${req.user.rumuz} paylaşımına destek verdi.`,
+        link: post.id,
+      });
+    }
     res.json({ ok: true, supported });
   });
 
@@ -55,6 +63,15 @@ function apiRoutes(app, requireAuth, writeLimiter) {
     const content = clean(req.body?.content, 300);
     if (content.length < 2) return res.status(400).json({ ok: false, error: 'Yorum en az 2 karakter olmalı.' });
     db.createComment(post.id, req.user.id, content);
+    if (post.user_id !== req.user.id) {
+      const preview = content.length > 80 ? content.slice(0, 80) + '…' : content;
+      db.createNotification({
+        userId: post.user_id, actorId: req.user.id, type: 'comment',
+        title: '💬 Paylaşımına yorum geldi',
+        body: `${req.user.rumuz}: ${preview}`,
+        link: post.id,
+      });
+    }
     res.json({ ok: true });
   });
 
@@ -110,6 +127,29 @@ function apiRoutes(app, requireAuth, writeLimiter) {
     const list = db.listApprovedLinks()
       .map((r) => ({ rumuz: r.rumuz, summary: r.summary, links: JSON.parse(r.links) }));
     res.json({ ok: true, list });
+  });
+
+  // ---- BİLDİRİMLER ----
+  app.get('/api/notifications', (req, res) => {
+    res.json({
+      ok: true,
+      notifications: db.listNotifications(req.user.id),
+      unread: db.unreadNotificationCount(req.user.id),
+    });
+  });
+
+  app.get('/api/notifications/unread-count', (req, res) => {
+    res.json({ ok: true, count: db.unreadNotificationCount(req.user.id) });
+  });
+
+  app.post('/api/notifications/read-all', writeLimiter, (req, res) => {
+    db.markAllNotificationsRead(req.user.id);
+    res.json({ ok: true });
+  });
+
+  app.post('/api/notifications/:id/read', writeLimiter, (req, res) => {
+    db.markNotificationRead(req.params.id, req.user.id);
+    res.json({ ok: true });
   });
 
   // ---- SABİT İÇERİK ----

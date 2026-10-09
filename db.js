@@ -121,6 +121,22 @@ CREATE INDEX IF NOT EXISTS idx_messages_conv ON messages(conversation_id, create
 // v2 geçiş: kullanıcılara rol alanı ('member' | 'counselor' | 'system')
 try { db.exec("ALTER TABLE users ADD COLUMN role TEXT NOT NULL DEFAULT 'member'"); } catch { /* sütun zaten var */ }
 
+// v3: bildirim merkezi (zil ikonu)
+db.exec(`
+CREATE TABLE IF NOT EXISTS notifications (
+  id         TEXT PRIMARY KEY,
+  user_id    TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  type       TEXT NOT NULL,                  -- 'dm' | 'support_msg' | 'comment' | 'react'
+  title      TEXT NOT NULL,
+  body       TEXT NOT NULL DEFAULT '',
+  link       TEXT NOT NULL DEFAULT '',       -- hedef: sohbet id'si veya paylaşım id'si
+  actor_id   TEXT,                           -- tetikleyen kullanıcı (silinirse boş kalır)
+  read_at    TEXT,
+  created_at TEXT NOT NULL DEFAULT (datetime('now'))
+);
+CREATE INDEX IF NOT EXISTS idx_notifications_user ON notifications(user_id, created_at DESC);
+`);
+
 // ---------- YARDIMCILAR ----------
 const newId = () => crypto.randomUUID();
 const now = () => new Date().toISOString();
@@ -380,6 +396,50 @@ function systemMessageExists(convId) {
 function getSystemUser()      { return getUserByEmail('system@spektrum.local'); }
 function getCounselorUser()   { return getUserByEmail('psikolog@spektrum.local'); }
 
+// Sohbet yardımcıları (bildirimler için)
+function otherConversationMembers(convId, userId) {
+  return db.prepare(`
+    SELECT u.id, u.rumuz, u.role FROM conversation_members m
+    JOIN users u ON u.id = m.user_id
+    WHERE m.conversation_id = ? AND m.user_id != ?`).all(convId, userId);
+}
+function getSupportConversationOwner(convId) {
+  return db.prepare(`
+    SELECT u.id, u.rumuz, u.role FROM conversation_members m
+    JOIN users u ON u.id = m.user_id
+    WHERE m.conversation_id = ? AND u.role NOT IN ('counselor','system') LIMIT 1`).get(convId) || null;
+}
+function listCounselors() {
+  return db.prepare(`SELECT id, rumuz, role FROM users WHERE role = 'counselor'`).all();
+}
+
+// ---------- BİLDİRİMLER ----------
+function createNotification({ userId, type, title, body = '', link = '', actorId = null }) {
+  if (!userId) return null;
+  if (actorId && userId === actorId) return null;      // kendine bildirim yok
+  if (!getUserById(userId)) return null;
+  const id = newId();
+  db.prepare(`INSERT INTO notifications (id, user_id, type, title, body, link, actor_id)
+              VALUES (?, ?, ?, ?, ?, ?, ?)`)
+    .run(id, userId, type, String(title).slice(0, 120), String(body).slice(0, 200), String(link).slice(0, 200), actorId || null);
+  return id;
+}
+function listNotifications(userId, limit = 30) {
+  return db.prepare(`
+    SELECT id, type, title, body, link, read_at, created_at
+    FROM notifications WHERE user_id = ?
+    ORDER BY created_at DESC, rowid DESC LIMIT ?`).all(userId, limit);
+}
+function unreadNotificationCount(userId) {
+  return db.prepare('SELECT COUNT(*) AS c FROM notifications WHERE user_id = ? AND read_at IS NULL').get(userId).c;
+}
+function markNotificationRead(id, userId) {
+  db.prepare(`UPDATE notifications SET read_at = ? WHERE id = ? AND user_id = ? AND read_at IS NULL`).run(now(), id, userId);
+}
+function markAllNotificationsRead(userId) {
+  db.prepare(`UPDATE notifications SET read_at = ? WHERE user_id = ? AND read_at IS NULL`).run(now(), userId);
+}
+
 // ---------- SABİT İÇERİK ----------
 function listNotices()   { return db.prepare('SELECT * FROM notices ORDER BY id DESC LIMIT 10').all(); }
 function listResources() { return db.prepare('SELECT * FROM resources ORDER BY id ASC').all(); }
@@ -460,4 +520,7 @@ module.exports = {
   addMessage, listMessages, unreadCount, lastMessage, createConversation,
   getOrCreateDm, getOrCreateSupportConversation, listConversationsFor, listSupportInbox,
   systemMessageExists, getSystemUser, getCounselorUser,
+  otherConversationMembers, getSupportConversationOwner, listCounselors,
+  // bildirimler
+  createNotification, listNotifications, unreadNotificationCount, markNotificationRead, markAllNotificationsRead,
 };

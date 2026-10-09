@@ -327,6 +327,36 @@
             .user-chip { background: #f7f5f8; }
             .chat-msgs { background: #fbfafc; }
         }
+
+        /* --- BİLDİRİMLER (zil ikonu + açılır panel) --- */
+        .notif-wrap { position: relative; }
+        .notif-bell { position: relative; padding: .45rem .85rem; }
+        .notif-bell .badge {
+            position: absolute; top: -7px; right: -7px; margin: 0;
+            min-width: 20px; text-align: center; padding: .12rem .42rem;
+            box-shadow: 0 2px 8px rgba(121,81,183,.35);
+        }
+        .notif-panel {
+            position: absolute; top: calc(100% + 12px); right: 0; width: min(360px, calc(100vw - 2rem));
+            background: var(--sp-card); border: 1px solid var(--sp-line); border-radius: 16px;
+            box-shadow: 0 22px 55px rgba(43,31,54,.16); overflow: hidden; z-index: 80;
+        }
+        .notif-panel[hidden] { display: none; }
+        .notif-head {
+            display: flex; align-items: center; justify-content: space-between; gap: .5rem;
+            padding: .85rem 1rem; border-bottom: 1px solid var(--sp-line); font-size: .9rem; color: var(--sp-ink);
+        }
+        .notif-list { max-height: 340px; overflow-y: auto; }
+        .notif-item {
+            padding: .8rem 1rem; border-bottom: 1px solid var(--sp-line); cursor: pointer;
+            transition: background .2s;
+        }
+        .notif-item:hover { background: rgba(121,81,183,.1); }
+        .notif-item.unread { background: rgba(121,81,183,.08); border-left: 3px solid var(--sp-violet); }
+        .notif-title { font-size: .84rem; font-weight: 750; color: var(--sp-ink); }
+        .notif-body { font-size: .78rem; color: var(--sp-muted); margin-top: .2rem; line-height: 1.5; word-break: break-word; }
+        .notif-time { font-size: .68rem; color: var(--sp-muted); opacity: .75; margin-top: .35rem; }
+        .notif-foot { padding: .65rem 1rem; text-align: center; border-top: 1px solid var(--sp-line); }
     </style>
 </head>
 <body>
@@ -336,6 +366,16 @@
     <div class="logo" onclick="showPanel('home')">SPEKTRUM</div>
     <div class="top-right">
         <button class="chip-btn share-btn" onclick="startCommunityPost()">✍️ Yeni paylaşım</button>
+        <div class="notif-wrap" onclick="event.stopPropagation()">
+            <button class="chip-btn notif-bell" id="notif-bell" onclick="toggleNotifPanel()" title="Bildirimler">🔔<span class="badge" id="notif-badge" hidden>0</span></button>
+            <div class="notif-panel" id="notif-panel" hidden>
+                <div class="notif-head">
+                    <strong>🔔 Bildirimler</strong>
+                    <button class="text-action" onclick="markAllNotifsRead()">Tümünü okundu işaretle</button>
+                </div>
+                <div class="notif-list" id="notif-list"><div class="empty" style="border:0">Yükleniyor…</div></div>
+            </div>
+        </div>
         <div class="user-chip" id="user-chip">…</div>
         <button class="chip-btn" onclick="showPanel('profil')">👤 Profil</button>
         <button class="chip-btn danger" onclick="logout()">Çıkış</button>
@@ -1020,6 +1060,95 @@
         } catch (e) { /* yoksay */ }
     }
 
+    // ---------- Bildirimler ----------
+    function toggleNotifPanel() {
+        const p = $('#notif-panel');
+        p.hidden = !p.hidden;
+        if (!p.hidden) loadNotifs();
+    }
+    function closeNotifPanel() { $('#notif-panel').hidden = true; }
+
+    document.addEventListener('click', (e) => {
+        const p = $('#notif-panel');
+        if (p && !p.hidden && !e.target.closest('.notif-wrap')) p.hidden = true;
+    });
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeNotifPanel(); });
+
+    function notifItem(n) {
+        return h('div', {
+            class: 'notif-item' + (n.read_at ? '' : ' unread'),
+            onclick: () => openNotif(n),
+        },
+            h('div', { class: 'notif-title' }, n.title),
+            n.body ? h('div', { class: 'notif-body' }, n.body) : '',
+            h('div', { class: 'notif-time' }, fmtTime(n.created_at)));
+    }
+
+    async function loadNotifs() {
+        const list = $('#notif-list');
+        try {
+            const r = await api('/api/notifications');
+            if (!r.ok) return;
+            list.replaceChildren();
+            if (!r.notifications.length) {
+                list.append(h('div', { class: 'empty', style: 'border:0' }, 'Henüz bildirimin yok 🔔'));
+            } else {
+                r.notifications.forEach((n) => list.append(notifItem(n)));
+            }
+            setNotifBadge(r.unread);
+        } catch (e) { /* yoksay */ }
+    }
+
+    function setNotifBadge(count) {
+        const b = $('#notif-badge');
+        if (!b) return;
+        if (count > 0) { b.textContent = count > 9 ? '9+' : String(count); b.hidden = false; }
+        else b.hidden = true;
+    }
+
+    async function updateNotifBadge() {
+        try {
+            const res = await fetch('/api/notifications/unread-count');
+            if (!res.ok) return;
+            const d = await res.json();
+            if (d.ok) setNotifBadge(d.count);
+        } catch (e) { /* yoksay */ }
+    }
+
+    async function markAllNotifsRead() {
+        await api('/api/notifications/read-all', 'POST', {});
+        setNotifBadge(0);
+        loadNotifs();
+    }
+
+    async function openNotif(n) {
+        closeNotifPanel();
+        if (!n.read_at) {
+            api('/api/notifications/' + n.id + '/read', 'POST', {}).catch(() => {});
+            setNotifBadge(Math.max(0, parseInt($('#notif-badge').textContent || '0', 10) - (n.read_at ? 0 : 1)));
+            n.read_at = new Date().toISOString();
+        }
+        if (n.type === 'dm' || n.type === 'support_msg') {
+            showPanel('sohbet');
+            chatTab(n.type === 'dm' ? 'dm' : 'support');
+            if (n.type === 'support_msg' && currentUser.role !== 'counselor') chat.supportId = n.link;
+            let peer = null;
+            try {
+                if (n.type === 'dm') {
+                    const r = await api('/api/chat/conversations');
+                    peer = (r.conversations.find((c) => c.id === n.link) || {}).peer || null;
+                } else if (currentUser.role === 'counselor') {
+                    const r = await api('/api/chat/support/inbox');
+                    peer = (r.inbox.find((c) => c.id === n.link) || {}).owner || null;
+                }
+            } catch (e) { /* başlık yedeği: genel */ }
+            openChat({ id: n.link, type: n.type === 'dm' ? 'dm' : 'support', peer });
+            return;
+        }
+        // comment / react → topluluk duvarı
+        showPanel('topluluk');
+    }
+
     // ---------- Kaynaklar ----------
     async function loadResources() {
         const grid = $('#resources-grid');
@@ -1071,7 +1200,8 @@
         loadHome();
         loadResources();
         updateChatBadge();
-        setInterval(updateChatBadge, 8000);
+        updateNotifBadge();
+        setInterval(() => { updateChatBadge(); updateNotifBadge(); }, 8000);
     })();
 </script>
 </body>
