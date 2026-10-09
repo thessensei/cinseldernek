@@ -3,6 +3,9 @@ const db = require('./db');
 
 const CATEGORIES = new Set(['genel', 'psikolojik', 'hukuk', 'topluluk', 'barinma']);
 const REQUEST_TYPES = new Set(['psikolojik', 'hukuk', 'barinma', 'topluluk', 'diger']);
+const SUPPORT_AREAS = new Set(['psikolojik', 'hukuk', 'barinma', 'topluluk', 'gonullu', 'diger']);
+const REQUEST_STATUSES = new Set(['beklemede', 'inceleniyor', 'tamamlandi', 'kapatildi']);
+const REQUEST_STATUS_LABELS = { beklemede: 'Beklemede', inceleniyor: 'İnceleniyor', tamamlandi: 'Tamamlandı', kapatildi: 'Kapatıldı' };
 const clean = (s, max = 2000) => String(s ?? '').trim().slice(0, max);
 
 function apiRoutes(app, requireAuth, writeLimiter) {
@@ -11,11 +14,12 @@ function apiRoutes(app, requireAuth, writeLimiter) {
   // ---- PROFİL ----
   app.patch('/api/me', writeLimiter, (req, res) => {
     const { name, rumuz, supportArea } = req.body || {};
-    const nm = clean(name, 40), rz = clean(rumuz, 30), sa = clean(supportArea, 30) || null;
+    const nm = clean(name, 40), rz = clean(rumuz, 30), rawArea = clean(supportArea, 30);
+    const sa = SUPPORT_AREAS.has(rawArea) ? rawArea : null;
     if (!nm || nm.length < 2) return res.status(400).json({ ok: false, error: 'İsim en az 2 karakter olmalı.' });
     if (!rz || rz.length < 2) return res.status(400).json({ ok: false, error: 'Rumuz en az 2 karakter olmalı.' });
     const u = db.updateProfile(req.user.id, { name: nm, rumuz: rz, supportArea: sa });
-    res.json({ ok: true, user: { id: u.id, email: u.email, name: u.name, rumuz: u.rumuz, provider: u.provider, supportArea: u.support_area, createdAt: u.created_at } });
+    res.json({ ok: true, user: { id: u.id, email: u.email, name: u.name, rumuz: u.rumuz, provider: u.provider, supportArea: u.support_area, role: u.role || 'member', createdAt: u.created_at } });
   });
 
   // ---- TOPLULUK DUVARI ----
@@ -86,8 +90,34 @@ function apiRoutes(app, requireAuth, writeLimiter) {
     const message = clean(req.body?.message, 1500);
     if (subject.length < 3) return res.status(400).json({ ok: false, error: 'Konu en az 3 karakter olmalı.' });
     if (message.length < 10) return res.status(400).json({ ok: false, error: 'Mesaj en az 10 karakter olmalı.' });
-    db.createRequest(req.user.id, type, subject, message);
-    res.json({ ok: true });
+    const id = db.createRequest(req.user.id, type, subject, message);
+    for (const counselor of db.listCounselors()) {
+      db.createNotification({
+        userId: counselor.id, actorId: req.user.id, type: 'support_request',
+        title: 'Yeni destek talebi', body: `${req.user.rumuz} yeni bir destek talebi oluşturdu.`, link: id,
+      });
+    }
+    res.json({ ok: true, id });
+  });
+
+  // Counselor-only queue for reviewing and updating members' support requests.
+  app.get('/api/counselor/support-requests', (req, res) => {
+    if (req.user.role !== 'counselor') return res.status(403).json({ ok: false, error: 'Bu bölüm yalnızca uzman hesabı içindir.' });
+    res.json({ ok: true, requests: db.listAllRequests() });
+  });
+
+  app.patch('/api/counselor/support-requests/:id/status', writeLimiter, (req, res) => {
+    if (req.user.role !== 'counselor') return res.status(403).json({ ok: false, error: 'Bu işlem yalnızca uzman hesabı içindir.' });
+    const status = clean(req.body?.status, 24);
+    if (!REQUEST_STATUSES.has(status)) return res.status(400).json({ ok: false, error: 'Geçersiz talep durumu.' });
+    const request = db.updateRequestStatus(req.params.id, status);
+    if (!request) return res.status(404).json({ ok: false, error: 'Destek talebi bulunamadı.' });
+    db.createNotification({
+      userId: request.user_id, actorId: req.user.id, type: 'request_status',
+      title: 'Destek talebinin durumu güncellendi',
+      body: `${request.subject}: ${REQUEST_STATUS_LABELS[status]}.`, link: request.id,
+    });
+    res.json({ ok: true, request });
   });
 
   // ---- DESTEK ÇANTASI (üyenin kendi sayfası/takip süreci) ----
@@ -108,7 +138,7 @@ function apiRoutes(app, requireAuth, writeLimiter) {
       .map((l) => ({ label: clean(l?.label, 60), url: clean(l?.url, 300) }))
       .filter((l) => l.label && /^https?:\/\//i.test(l.url))
       .slice(0, 5);
-    // Onaylı üyeler kapatma isteği yapabilir; onaysız hesapta kapatma yok.
+    // Consent is explicit and revocable; closed hides links without clearing the saved content.
     const pack = db.upsertSupportPack(req.user.id, {
       approved: !!body.approved,
       links, summary,
@@ -117,12 +147,11 @@ function apiRoutes(app, requireAuth, writeLimiter) {
     res.json({ ok: true, pack: { approved: !!pack.approved, links: JSON.parse(pack.links), summary: pack.summary, closed: !!pack.closed } });
   });
 
-  // "Yakın arkadaş" profil linkleri — yalnızca onaylı (approved) ve süreci açık üyelerin paylaştıkları görünür;
-  // sayfaya yalnızca kendi çantası onaylı üyeler erişir.
+  // Opt-in links are visible only to members who have also opted in and have not paused sharing.
   app.get('/api/support-pack/approved-links', (req, res) => {
     const mine = db.getSupportPack(req.user.id);
     if (!mine || !mine.approved || mine.closed) {
-      return res.status(403).json({ ok: false, error: 'Bu bölüm, destek çantası onaylı ve süreci açık üyelere özeldir.' });
+      return res.status(403).json({ ok: false, error: 'Bu bölüm yalnızca paylaşım izni açık üyelere görünür.' });
     }
     const list = db.listApprovedLinks()
       .map((r) => ({ rumuz: r.rumuz, summary: r.summary, links: JSON.parse(r.links) }));

@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f8f7f4">
+  <meta name="description" content="SPEKTRUM güvenli topluluk alanı.">
+  <title>Topluluk Alanı — SPEKTRUM</title>
+  <link rel="stylesheet" href="/styles.css">
+  <script src="/app.js" defer></script>
+</head>
+<body class="app-page">
+  <a class="skip-link" href="#page-content">İçeriğe geç</a>
+  <div class="mobile-scrim" id="mobile-scrim" hidden></div>
+  <div class="portal-shell">
+    <aside class="portal-sidebar" id="portal-sidebar" aria-label="Ana menü">
+      <a class="brand sidebar-brand" href="/" aria-label="SPEKTRUM ana sayfa">
+        <span class="brand-mark" aria-hidden="true"><span></span><span></span><span></span><span></span></span>
+        <span class="brand-word">SPEKTRUM<small>DAYANIŞMA AĞI</small></span>
+      </a>
+      <div class="sidebar-caption">GÜVENLİ TOPLULUK ALANI</div>
+      <nav class="portal-nav" aria-label="Bölümler">
+        <button class="portal-nav-item is-active" type="button" data-page="home"><span class="nav-icon">⌂</span><span>Genel bakış</span></button>
+        <button class="portal-nav-item" type="button" data-page="wall"><span class="nav-icon">✳</span><span>Topluluk duvarı</span></button>
+        <button class="portal-nav-item" type="button" data-page="chat"><span class="nav-icon">◌</span><span>Sohbet</span><span class="nav-badge" id="chat-badge" hidden>0</span></button>
+        <button class="portal-nav-item" type="button" data-page="support"><span class="nav-icon">♡</span><span>Destek iste</span></button>
+        <button class="portal-nav-item" type="button" data-page="pack"><span class="nav-icon">▱</span><span>Destek çantam</span></button>
+        <button class="portal-nav-item" type="button" data-page="resources"><span class="nav-icon">⌕</span><span>Kaynaklar</span></button>
+      </nav>
+      <div class="sidebar-bottom">
+        <div class="sidebar-note"><span class="sidebar-note-icon">✦</span><div><strong>Burada kendi hızındasın.</strong><p>İstediğin zaman ara verebilir, paylaşımını silebilir ya da destek isteyebilirsin.</p></div></div>
+        <button class="sidebar-exit" type="button" data-action="quick-exit"><span>↗</span> Hızlı çıkış</button>
+        <button class="sidebar-logout" type="button" id="logout-button">Güvenli çıkış yap</button>
+        <div class="sidebar-account" id="sidebar-account"><span class="account-avatar" id="account-avatar">S</span><span class="account-copy"><strong id="account-rumuz">Yükleniyor</strong><small id="account-email"></small></span><button class="account-menu" type="button" data-action="profile" aria-label="Profil ayarları">···</button></div>
+      </div>
+    </aside>
+
+    <div class="portal-main-wrap">
+      <header class="portal-topbar">
+        <div class="topbar-leading">
+          <button class="menu-toggle" id="menu-toggle" type="button" aria-label="Menüyü aç" aria-expanded="false">☰</button>
+          <div class="topbar-page"><span>SPEKTRUM</span><strong id="page-title">Genel bakış</strong></div>
+        </div>
+        <div class="topbar-actions">
+          <div class="notification-wrap">
+            <button class="icon-button notification-button" id="notification-toggle" type="button" aria-label="Bildirimler" aria-expanded="false">🔔<span class="notification-dot" id="notification-dot" hidden></span></button>
+            <section class="notification-panel" id="notification-panel" aria-label="Bildirimler" hidden>
+              <div class="notification-panel-head"><div><span class="eyebrow">GELEN KUTUSU</span><h2>Bildirimler</h2></div><button class="text-button" id="mark-all-read" type="button">Tümünü okundu yap</button></div>
+              <div class="notification-list" id="notification-list"><p class="empty-state">Yükleniyor…</p></div>
+            </section>
+          </div>
+          <button class="topbar-quick-exit" type="button" data-action="quick-exit"><span>↗</span><span>Hızlı çıkış</span></button>
+        </div>
+      </header>
+      <main id="page-content" class="page-content" tabindex="-1" aria-live="polite"><div class="page-loading"><span class="loading-mark"></span><p>Güvenli alan hazırlanıyor…</p></div></main>
+      <footer class="portal-footer"><span>© 2026 SPEKTRUM Dayanışma Ağı</span><span>Birbirimize iyi bakalım <b>♥</b></span></footer>
+    </div>
+  </div>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+</body>
+</html>

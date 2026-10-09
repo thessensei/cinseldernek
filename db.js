@@ -5,10 +5,12 @@ const fs = require('node:fs');
 const path = require('node:path');
 const crypto = require('node:crypto');
 
-const DATA_DIR = path.join(__dirname, 'data');
-fs.mkdirSync(DATA_DIR, { recursive: true });
+const DATABASE_PATH = process.env.DATABASE_PATH
+  ? path.resolve(process.env.DATABASE_PATH)
+  : path.join(__dirname, 'data', 'spektrum.db');
+fs.mkdirSync(path.dirname(DATABASE_PATH), { recursive: true });
 
-const db = new DatabaseSync(path.join(DATA_DIR, 'spektrum.db'));
+const db = new DatabaseSync(DATABASE_PATH);
 db.exec('PRAGMA journal_mode = WAL');
 db.exec('PRAGMA foreign_keys = ON');
 
@@ -236,6 +238,17 @@ function createRequest(userId, type, subject, message) {
 function listMyRequests(userId) {
   return db.prepare('SELECT * FROM support_requests WHERE user_id=? ORDER BY created_at DESC LIMIT 30').all(userId);
 }
+function listAllRequests(limit = 100) {
+  return db.prepare(`
+    SELECT r.*, u.rumuz FROM support_requests r
+    JOIN users u ON u.id = r.user_id
+    ORDER BY r.created_at DESC LIMIT ?`).all(limit);
+}
+function updateRequestStatus(id, status) {
+  const result = db.prepare('UPDATE support_requests SET status=?, updated_at=? WHERE id=?').run(status, now(), id);
+  if (!result.changes) return null;
+  return db.prepare('SELECT * FROM support_requests WHERE id=?').get(id) || null;
+}
 
 // ---------- DESTEK PAKETİ ----------
 function getSupportPack(userId) {
@@ -243,8 +256,9 @@ function getSupportPack(userId) {
 }
 function upsertSupportPack(userId, { approved, links, summary, closed }) {
   const cur = getSupportPack(userId);
-  const approvedVal = (cur ? cur.approved : 0) || (approved ? 1 : 0);
-  const closedVal = approvedVal ? (closed ? 1 : 0) : (cur ? cur.closed : 0);
+  // Consent is revocable: a member may hide their links at any time.
+  const approvedVal = approved ? 1 : 0;
+  const closedVal = approvedVal && closed ? 1 : 0;
   db.prepare(`INSERT INTO support_pack (user_id, approved, links, summary, closed, updated_at)
               VALUES (?, ?, ?, ?, ?, ?)
               ON CONFLICT(user_id) DO UPDATE SET
@@ -481,11 +495,39 @@ function seed() {
   if (!getUserByEmail('system@spektrum.local')) {
     createUser({ email: 'system@spektrum.local', name: 'SPEKTRUM Destek', rumuz: 'SPEKTRUM Destek', role: 'system' });
   }
-  if (!getUserByEmail('psikolog@spektrum.local')) {
-    createUser({
-      email: 'psikolog@spektrum.local', passwordHash: scryptHash('spektrum2026'),
-      name: 'Dr. Elif Aydın', rumuz: 'Dr. Elif', role: 'counselor', supportArea: 'psikolojik',
-    });
+  const counselorEmail = String(process.env.COUNSELOR_EMAIL || '').trim().toLowerCase();
+  const counselorPassword = String(process.env.COUNSELOR_PASSWORD || '');
+  const counselorName = String(process.env.COUNSELOR_NAME || 'SPEKTRUM Uzman Ekibi').trim().slice(0, 40) || 'SPEKTRUM Uzman Ekibi';
+  const counselorEmailValid = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(counselorEmail);
+  if (counselorEmailValid && counselorPassword.length >= 12 && counselorPassword.length <= 128) {
+    const passwordHash = scryptHash(counselorPassword);
+    const current = getUserByEmail(counselorEmail);
+    if (current) {
+      db.prepare(`UPDATE users SET role='counselor', password_hash=?, provider='local', provider_id=NULL,
+                  name=?, rumuz=?, support_area='psikolojik', updated_at=? WHERE id=?`)
+        .run(passwordHash, counselorName, counselorName, now(), current.id);
+    } else {
+      createUser({ email: counselorEmail, passwordHash, name: counselorName, rumuz: counselorName, role: 'counselor', supportArea: 'psikolojik' });
+    }
+  } else if (process.env.NODE_ENV === 'development') {
+    // Non-production convenience account. Never create this known password in production.
+    const demoCounselor = getUserByEmail('psikolog@spektrum.local');
+    const demoPasswordHash = scryptHash('spektrum2026');
+    if (demoCounselor) {
+      db.prepare(`UPDATE users SET role='counselor', password_hash=?, provider='local', provider_id=NULL,
+                  name='SPEKTRUM Uzman Ekibi', rumuz='Uzman Destek', support_area='psikolojik', updated_at=? WHERE id=?`)
+        .run(demoPasswordHash, now(), demoCounselor.id);
+    } else {
+      createUser({
+        email: 'psikolog@spektrum.local', passwordHash: demoPasswordHash,
+        name: 'SPEKTRUM Uzman Ekibi', rumuz: 'Uzman Destek', role: 'counselor', supportArea: 'psikolojik',
+      });
+    }
+  } else {
+    // Older databases may already contain the former demo counselor account. Demote it unless explicitly configured.
+    db.prepare(`UPDATE users SET role='member', password_hash=NULL, updated_at=?
+                WHERE email='psikolog@spektrum.local' COLLATE NOCASE AND role='counselor'`)
+      .run(now());
   }
   // Global sohbeti canlı gösteren örnek üyeler (şifresiz, giriş yapılamaz)
   const seedAccounts = [
@@ -499,8 +541,8 @@ function seed() {
   });
   const gCount = db.prepare("SELECT COUNT(*) AS c FROM messages WHERE conversation_id='global'").get().c;
   if (gCount === 0) {
-    addMessage('global', seeded[0].id, 'Herkese merhaba! Bu global sohbeti açan ilk mesajlasan ben olayım 🦋 Burada güvendesiniz.');
-    addMessage('global', seeded[1].id, 'Hoş geldin MorKelebek! 🌙 Bu hafta Cumartesi çevrim içi dayanışma buluşması var, katılacaklar buraya düşsün.');
+    addMessage('global', seeded[0].id, 'Merhaba! Bu sohbet, topluluk üyelerinin birbirine destek olduğu açık bir alan. Lütfen kişisel bilgilerini paylaşma.');
+    addMessage('global', seeded[1].id, 'Hoş geldin. Saygılı ve kapsayıcı bir dil kullanalım; burada herkesin sınırlarına özen gösteriyoruz.');
   }
 }
 seed();
@@ -512,7 +554,7 @@ module.exports = {
   createUser, getUserById, getUserByEmail, getUserByProvider, linkGoogleToUser, updateProfile,
   createSession, getSessionUser, deleteSession,
   createPost, listPosts, getPost, toggleReaction, myReaction, createComment, listComments,
-  createRequest, listMyRequests,
+  createRequest, listMyRequests, listAllRequests, updateRequestStatus,
   getSupportPack, upsertSupportPack, listApprovedLinks,
   listNotices, listResources,
   // sohbet
